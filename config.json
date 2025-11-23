@@ -1,0 +1,114 @@
+{
+    "api": {
+        "key": "",
+        "secret": "",
+        "testnet": true
+    },
+    "trading": {
+        "symbols": [
+            "BTCUSDT",
+            "ETHUSDT",
+            "BNBUSDT",
+            "ADAUSDT",
+            "SOLUSDT",
+            "LINKUSDT",
+            "DOTUSDT",
+            "UNIUSDT",
+            "AVAXUSDT",
+            "MATICUSDT"
+        ],
+        "risk_per_trade": 0.01,
+        "max_positions": 10,
+        "one_position_per_symbol": true,
+        "min_confidence": 0.45,
+        "trailing_stop_percentage_points": 0.30,
+        "min_profit_to_trail": 0.5,
+        "initial_tp_percent": 10.0,
+        "continuous_trading": true,
+        "suspend_on_drawdown": false,
+        "exploration_rate": 0.15
+    },
+    "stop_loss": {
+        "description": "REASONABLE stop losses with breathing room",
+        "base_distance": 0.03,
+        "strategy_specific": {
+            "SCALPING": 0.02,
+            "MOMENTUM": 0.03,
+            "MEAN_REVERSION": 0.025,
+            "TREND_FOLLOWING": 0.05,
+            "BREAKOUT": 0.03
+        },
+        "volatile_coins_multiplier": 1.5,
+        "volatile_coins": [
+            "DOGEUSDT",
+            "SHIBUSDT",
+            "ADAUSDT",
+            "SOLUSDT",
+            "AVAXUSDT",
+            "MATICUSDT"
+        ],
+        "note": "Stop loss is PRICE distance (2-5%), not P&L percentage"
+    },
+    "leverage": {
+        "enabled": true,
+        "min_leverage": 3.0,
+        "max_leverage": 5.0,
+        "confidence_mapping": {
+            "0.4": 3.0,
+            "0.5": 3.5,
+            "0.6": 4.0,
+            "0.7": 4.5,
+            "0.8": 5.0
+        },
+        "mtf_bonus": {
+            "STRONG_BULLISH": 0.5,
+            "STRONG_BEARISH": 0.5,
+            "BULLISH": 0.25,
+            "BEARISH": 0.25
+        },
+        "description": "3-5x leverage based on confidence & MTF alignment"
+    },
+    "multi_timeframe": {
+        "enabled": true,
+        "timeframes": ["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "8h", "12h", "1d"],
+        "alignment_weight": 0.6,
+        "signal_weight": 0.4,
+        "strong_alignment_threshold": 0.40
+    },
+    "duplicate_prevention": {
+        "enabled": true,
+        "check_active_positions": true,
+        "check_recent_closed": true,
+        "recent_closed_minutes": 5,
+        "price_similarity_threshold": 0.002,
+        "description": "Prevents multiple positions on same symbol"
+    },
+    "ml": {
+        "enabled": true,
+        "learning_rate": 0.02,
+        "min_samples": 10,
+        "self_adjustment": true,
+        "aggressive_learning": true,
+        "loss_multiplier": 1.5
+    },
+    "risk_limits": {
+        "enforce_suspension": false,
+        "max_consecutive_losses": null,
+        "max_daily_loss": null,
+        "circuit_breaker": false,
+        "minimum_balance": 10
+    },
+    "data_collection": {
+        "priority": "maximum",
+        "continue_on_losses": true,
+        "record_all_trades": true,
+        "record_mtf_analysis": true,
+        "record_leverage": true,
+        "export_format": "csv_with_leverage"
+    },
+    "validation": {
+        "historical_validation": true,
+        "timestamp_verification": true,
+        "price_match_threshold": 0.001
+    }
+}
