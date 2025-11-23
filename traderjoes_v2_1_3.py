@@ -669,8 +669,7 @@ class TradingWorkerV2(QThread):
         # Add symbols to trading engine
         self.trading_engine.add_symbols(symbols)
         
-        # Subscribe to price updates for active trade monitoring
-        # Subscribe to price updates for active trade monitoring
+                # Subscribe to price updates for active trade monitoring
         try:
             for symbol in symbols:
                 self.market_service.subscribe_price(symbol, self._on_price_update)
@@ -681,20 +680,20 @@ class TradingWorkerV2(QThread):
         except Exception as e:
             logger.info(f"⚠️ Market Data Service error: {e}")
             return
-        
+
         logger.info("=" * 50)
-            logger.info("✅ TraderJoes v2.1.3 Ready - P&L DISPLAY FIXED")
-            logger.info(f"💰 Starting Balance: ${self.trading_engine.account_balance:.2f}")
-            logger.info(f"💵 Available Balance: ${self.risk_manager.available_balance:.2f}")
-            logger.info(f"📊 Risk Per Trade: {self.risk_manager.risk_per_trade*100}% margin")
-            logger.info(f"🎯 Max Positions: {self.risk_manager.max_positions} (1 per symbol)")
-            logger.info(f"⚡ Leverage: 3-5x based on confidence")
-            logger.info(f"🛡️ Stop Loss: 2-5% price distance")
-            logger.info(f"💹 P&L Display: Shows $ and % properly")
-            logger.info(f"📈 Trailing Stop: 0.30 percentage points")
-            logger.info("🔍 MULTI-TIMEFRAME: 1m to 1d analysis")
-            logger.info("🚫 DUPLICATE PREVENTION: One position per symbol")
-            logger.info("=" * 50)
+        logger.info("✅ TraderJoes v2.1.3 Ready - P&L DISPLAY FIXED")
+        logger.info(f"💰 Starting Balance: ${self.trading_engine.account_balance:.2f}")
+        logger.info(f"💵 Available Balance: ${self.risk_manager.available_balance:.2f}")
+        logger.info(f"📊 Risk Per Trade: {self.risk_manager.risk_per_trade*100}% margin")
+        logger.info(f"🎯 Max Positions: {self.risk_manager.max_positions} (1 per symbol)")
+        logger.info(f"⚡ Leverage: 3-5x based on confidence")
+        logger.info(f"🛡️ Stop Loss: 2-5% price distance")
+        logger.info(f"💹 P&L Display: Shows $ and % properly")
+        logger.info(f"📈 Trailing Stop: 0.30 percentage points")
+        logger.info("🔍 MULTI-TIMEFRAME: 1m to 1d analysis")
+        logger.info("🚫 DUPLICATE PREVENTION: One position per symbol")
+        logger.info("=" * 50)
             
             # Main loop - 1 second intervals for real-time updates
             while self.is_running:
