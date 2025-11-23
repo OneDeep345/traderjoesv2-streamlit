@@ -629,7 +629,7 @@ class TradingWorkerV2(QThread):
     def run(self):
         """Main trading thread"""
         self.is_running = True
-        self.log_signal.emit("🚀 Starting TraderJoes v2.0.0...")
+        logger.info("🚀 Starting TraderJoes v2.0.0...")
         
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -637,11 +637,11 @@ class TradingWorkerV2(QThread):
         try:
             loop.run_until_complete(self.trade_loop())
         except Exception as e:
-            self.error_signal.emit(f"Error: {e}")
+            logger.error(f"Error: {e}")
             logger.error(f"Trading error: {e}\n{traceback.format_exc()}")
         finally:
             loop.close()
-            self.log_signal.emit("Trading stopped")
+            logger.info("Trading stopped")
     
     async def trade_loop(self):
         """Main trading loop with v2.0.0 enhancements"""
@@ -657,8 +657,8 @@ class TradingWorkerV2(QThread):
         
         # Start market data service
         await self.market_service.start(symbols)
-        self.log_signal.emit(f"✅ Market Data Service started for {len(symbols)} symbols")
-        self.log_signal.emit("📡 Real-time WebSocket + REST data flowing")
+        logger.info(f"✅ Market Data Service started for {len(symbols)} symbols")
+        logger.info("📡 Real-time WebSocket + REST data flowing")
         
         # Initialize trading engine
         self.trading_engine = TradingEngine()
@@ -674,26 +674,26 @@ class TradingWorkerV2(QThread):
             self.market_service.subscribe_price(symbol, self._on_price_update)
             # Subscribe to closed candles for strategy signals
             self.market_service.subscribe_candle_closed(symbol, '5m', self._on_candle_closed)
-                self.log_signal.emit(f"📊 Monitoring {len(symbols)} symbols with unified data layer")
-                self.log_signal.emit("⚡ Real-time WebSocket + REST fallback enabled")
+                logger.info(f"📊 Monitoring {len(symbols)} symbols with unified data layer")
+                logger.info("⚡ Real-time WebSocket + REST fallback enabled")
                 
             except Exception as e:
-                self.log_signal.emit(f"⚠️ Market Data Service error: {e}")
+                logger.info(f"⚠️ Market Data Service error: {e}")
                 return
             
-            self.log_signal.emit("=" * 50)
-            self.log_signal.emit("✅ TraderJoes v2.1.3 Ready - P&L DISPLAY FIXED")
-            self.log_signal.emit(f"💰 Starting Balance: ${self.trading_engine.account_balance:.2f}")
-            self.log_signal.emit(f"💵 Available Balance: ${self.risk_manager.available_balance:.2f}")
-            self.log_signal.emit(f"📊 Risk Per Trade: {self.risk_manager.risk_per_trade*100}% margin")
-            self.log_signal.emit(f"🎯 Max Positions: {self.risk_manager.max_positions} (1 per symbol)")
-            self.log_signal.emit(f"⚡ Leverage: 3-5x based on confidence")
-            self.log_signal.emit(f"🛡️ Stop Loss: 2-5% price distance")
-            self.log_signal.emit(f"💹 P&L Display: Shows $ and % properly")
-            self.log_signal.emit(f"📈 Trailing Stop: 0.30 percentage points")
-            self.log_signal.emit("🔍 MULTI-TIMEFRAME: 1m to 1d analysis")
-            self.log_signal.emit("🚫 DUPLICATE PREVENTION: One position per symbol")
-            self.log_signal.emit("=" * 50)
+            logger.info("=" * 50)
+            logger.info("✅ TraderJoes v2.1.3 Ready - P&L DISPLAY FIXED")
+            logger.info(f"💰 Starting Balance: ${self.trading_engine.account_balance:.2f}")
+            logger.info(f"💵 Available Balance: ${self.risk_manager.available_balance:.2f}")
+            logger.info(f"📊 Risk Per Trade: {self.risk_manager.risk_per_trade*100}% margin")
+            logger.info(f"🎯 Max Positions: {self.risk_manager.max_positions} (1 per symbol)")
+            logger.info(f"⚡ Leverage: 3-5x based on confidence")
+            logger.info(f"🛡️ Stop Loss: 2-5% price distance")
+            logger.info(f"💹 P&L Display: Shows $ and % properly")
+            logger.info(f"📈 Trailing Stop: 0.30 percentage points")
+            logger.info("🔍 MULTI-TIMEFRAME: 1m to 1d analysis")
+            logger.info("🚫 DUPLICATE PREVENTION: One position per symbol")
+            logger.info("=" * 50)
             
             # Main loop - 1 second intervals for real-time updates
             while self.is_running:
@@ -720,7 +720,7 @@ class TradingWorkerV2(QThread):
                         if len(self.active_trades) < self.risk_manager.max_positions:
                             await self.scan_markets()
                         if self.scan_count % 5 == 0:
-                            self.log_signal.emit(f"📍 Scans: {self.scan_count} | Active: {len(self.active_trades)}/{self.risk_manager.max_positions}")
+                            logger.info(f"📍 Scans: {self.scan_count} | Active: {len(self.active_trades)}/{self.risk_manager.max_positions}")
                     
                     await asyncio.sleep(1.0)  # 1 second for guaranteed 1Hz updates
                     
@@ -775,7 +775,7 @@ class TradingWorkerV2(QThread):
             })
         
         if active_list:
-            self.trade_signal.emit({'active_trades': active_list})
+            # removed trade signal
     
     async def scan_markets(self):
         """Scan markets with multi-timeframe analysis and DUPLICATE PREVENTION"""
@@ -799,7 +799,7 @@ class TradingWorkerV2(QThread):
                 
             try:
                 # CRITICAL: Multi-timeframe analysis
-                self.log_signal.emit(f"🔍 Analyzing {symbol} across all timeframes...")
+                logger.info(f"🔍 Analyzing {symbol} across all timeframes...")
                 mtf_analysis = await self.mtf_analyzer.analyze_all_timeframes(symbol, self.market_service)
                 
                 # Cache the analysis
@@ -847,7 +847,7 @@ class TradingWorkerV2(QThread):
                 if signal:
                     # DUPLICATE CHECK: Verify no recent similar trade
                     if self.is_duplicate_signal(symbol, signal.action, signal.entry_price):
-                        self.log_signal.emit(f"⚠️ Duplicate signal rejected for {symbol} at ${signal.entry_price:.2f}")
+                        logger.info(f"⚠️ Duplicate signal rejected for {symbol} at ${signal.entry_price:.2f}")
                         continue
                     
                     # Combine signal confidence with MTF confidence
@@ -866,7 +866,7 @@ class TradingWorkerV2(QThread):
                                 f"✅ Trade #{self.ml_optimizer.total_trades + 1} opened with MTF alignment"
                             )
                         else:
-                            self.log_signal.emit(f"⚠️ Signal rejected: Conflicts with MTF alignment")
+                            logger.info(f"⚠️ Signal rejected: Conflicts with MTF alignment")
                     
             except Exception as e:
                 logger.error(f"Scan error for {symbol}: {e}")
@@ -924,7 +924,7 @@ class TradingWorkerV2(QThread):
         try:
             # FINAL DUPLICATE CHECK before execution
             if self.has_active_position(signal.symbol):
-                self.log_signal.emit(f"❌ Trade rejected: Already have position on {signal.symbol}")
+                logger.info(f"❌ Trade rejected: Already have position on {signal.symbol}")
                 return
             
             # Check position limit again
@@ -1179,7 +1179,7 @@ class TradingWorkerV2(QThread):
                 for trade_id, trade in list(self.active_trades.items()):
                     if trade.symbol == symbol:
                         await self.close_trade_v2(trade_id, trade.current_price, "MANUAL")
-                        self.log_signal.emit(f"✅ Manually closed {symbol}")
+                        logger.info(f"✅ Manually closed {symbol}")
                         break
             except Exception as e:
                 logger.error(f"Close request error: {e}")
@@ -1257,7 +1257,7 @@ class TradingWorkerV2(QThread):
                     'duration': trade.duration,
                     'close_reason': trade.close_reason
                 })
-            self.trade_signal.emit({'closed_trades': closed_list})
+            # removed trade signal
         
         # Calculate statistics with proper P&L tracking
         total_pnl = sum(t.pnl for t in self.closed_trades)  # Includes ALL trades (wins AND losses)
@@ -1292,7 +1292,7 @@ class TradingWorkerV2(QThread):
                 f"   NET P&L: ${total_pnl:.2f}"
             )
         
-        self.stats_signal.emit(stats)
+        logger.info("Stats updated")
     
     def request_close_trade(self, symbol):
         """Queue close request"""
@@ -1340,7 +1340,7 @@ class TradingWorkerV2(QThread):
         if self.market_service:
             try:
                 asyncio.create_task(self.market_service.stop())
-                self.log_signal.emit("🛑 Market Data Service stopped")
+                logger.info("🛑 Market Data Service stopped")
             except:
                 pass
 
