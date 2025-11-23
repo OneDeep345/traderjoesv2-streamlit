@@ -670,18 +670,19 @@ class TradingWorkerV2(QThread):
         self.trading_engine.add_symbols(symbols)
         
         # Subscribe to price updates for active trade monitoring
-        for symbol in symbols:
-            self.market_service.subscribe_price(symbol, self._on_price_update)
-            # Subscribe to closed candles for strategy signals
-            self.market_service.subscribe_candle_closed(symbol, '5m', self._on_candle_closed)
-                logger.info(f"📊 Monitoring {len(symbols)} symbols with unified data layer")
-                logger.info("⚡ Real-time WebSocket + REST fallback enabled")
-                
-            except Exception as e:
-                logger.info(f"⚠️ Market Data Service error: {e}")
-                return
-            
-            logger.info("=" * 50)
+        # Subscribe to price updates for active trade monitoring
+        try:
+            for symbol in symbols:
+                self.market_service.subscribe_price(symbol, self._on_price_update)
+                # Subscribe to closed candles for strategy signals
+                self.market_service.subscribe_candle_closed(symbol, '5m', self._on_candle_closed)
+            logger.info(f"📊 Monitoring {len(symbols)} symbols with unified data layer")
+            logger.info("⚡ Real-time WebSocket + REST fallback enabled")
+        except Exception as e:
+            logger.info(f"⚠️ Market Data Service error: {e}")
+            return
+        
+        logger.info("=" * 50)
             logger.info("✅ TraderJoes v2.1.3 Ready - P&L DISPLAY FIXED")
             logger.info(f"💰 Starting Balance: ${self.trading_engine.account_balance:.2f}")
             logger.info(f"💵 Available Balance: ${self.risk_manager.available_balance:.2f}")
